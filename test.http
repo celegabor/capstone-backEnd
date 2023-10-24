@@ -1,0 +1,30 @@
+GET http://localhost:2121/video/get
+####
+POST http://localhost:2121/video/post HTTP/1.1
+Content-Type: application/json
+
+{
+    "title": "titolo2",
+    "categoryWork": "muratore2",
+    "video": "video link2",
+    "content": "contenuto descrizione2",
+    "author": "6537adbd5814b4a215626730"
+}
+
+####
+DELETE http://localhost:2121/video/delete/6537a927a3bcc7a04fd0fe13
+
+
+####
+POST http://localhost:2121/users2/post HTTP/1.1
+Content-Type: application/json
+
+{
+    "name": "tizio",
+    "lastName": "caio",
+    "email": "celegabor@gmail.com",
+    "dob": "1990-01-21", 
+    "address": "via giovanni prati",
+    "avatar": "link avatar",
+    "password": "password mia"
+}
