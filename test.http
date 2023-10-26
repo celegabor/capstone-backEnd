@@ -4,11 +4,11 @@ POST http://localhost:2121/video/post HTTP/1.1
 Content-Type: application/json
 
 {
-    "title": "titolo2",
-    "categoryWork": "muratore2",
+    "title": "titolo5",
+    "categoryWork": "meccanico",
     "video": "video link2",
-    "content": "contenuto descrizione2",
-    "author": "6537adbd5814b4a215626730"
+    "content": "cambia pezzi",
+    "author": "653939363261fc335639fbd1"
 }
 
 ####
@@ -20,11 +20,24 @@ POST http://localhost:2121/users2/post HTTP/1.1
 Content-Type: application/json
 
 {
-    "name": "tizio",
-    "lastName": "caio",
+    "name": "quattro",
+    "lastName": "QUATTRO",
     "email": "celegabor@gmail.com",
     "dob": "1990-01-21", 
     "address": "via giovanni prati",
-    "avatar": "link avatar",
+    "avatar": "https://png.pngtree.com/element_our/png/20181206/users-vector-icon-png_260862.jpg",
     "password": "password mia"
 }
+####
+
+POST http://localhost:2121/video/6539530f3261fc335639fd4b/comment/post HTTP/1.1
+Content-Type: application/json
+
+{
+    "comment": "primo  commento",
+    "author": "653939363261fc335639fbd1",
+    "videoId": "6539530f3261fc335639fd4b"
+}
+
+####
+

@@ -31,6 +31,31 @@ video.get('/video/get', async (req,res)=>{
     }
 })
 
+video.get('/video/get/:videoId' , async (req, res) => {
+    const { videoId } = req.params;
+
+    try {
+        const post = await PostModel.findById(videoId);
+
+        if (!video) {
+            return res.status(404).send({
+                statusCode: 404,
+                message: "Post non trovato!"
+            });
+        }
+
+        res.status(200).send({
+            statusCode: 200,
+            post
+        });
+    } catch (e) {
+        res.status(500).send({
+            statusCode: 500,
+            message: "Errore interno del server"
+        });
+    }
+});
+
 video.post('/video/post', async (req,res)=>{
 
     const newVideo = new VideoModel({
@@ -58,7 +83,7 @@ video.post('/video/post', async (req,res)=>{
     }
 })
 
-video.patch('/video/patch/:videoId', async (req,res)=>{
+video.put('/video/put/:videoId', async (req,res)=>{
 
     const { videoId } = req.params;
     const videoExist = await VideoModel.findById(videoId)

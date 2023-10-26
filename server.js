@@ -6,20 +6,22 @@ const cors = require('cors')
 
 const videoRoute = require('./routs/video')
 const users2Route = require('./routs/users2')
+const commentRoute = require('./routs/commentVideo')
 
 require('dotenv').config()
 
-const app = express();
-
 const PORT = 2121;
+const app = express();
 
 // app.use('/pubblic', express.static(path.join(__dirname, './pubblic')))
 
+app.use(cors())
+
 app.use(express.json())
 
-app.use(cors())
 app.use('/', videoRoute)
 app.use('/', users2Route)
+app.use('/', commentRoute)
 
 
 mongoose.connect(process.env.MONGODB_URL,{
