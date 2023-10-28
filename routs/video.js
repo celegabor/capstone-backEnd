@@ -1,8 +1,12 @@
 const express = require('express');
 const VideoModel = require('../models/videoModel')
 const video = express.Router()
+const verifyToken = require('../middlewares/verifyToken')
 
-video.get('/video/get', async (req,res)=>{
+require('dotenv').config()
+
+
+video.get('/video/get', verifyToken, async (req,res)=>{
 
     const{ page = 1, pageSize = 10} = req.query
 
@@ -31,7 +35,7 @@ video.get('/video/get', async (req,res)=>{
     }
 })
 
-video.get('/video/get/:videoId' , async (req, res) => {
+video.get('/video/get/:videoId', verifyToken , async (req, res) => {
     const { videoId } = req.params;
 
     try {

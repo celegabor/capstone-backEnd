@@ -7,6 +7,7 @@ const cors = require('cors')
 const videoRoute = require('./routs/video')
 const users2Route = require('./routs/users2')
 const commentRoute = require('./routs/commentVideo')
+const loginRoute = require('./routs/login')
 
 require('dotenv').config()
 
@@ -22,6 +23,7 @@ app.use(express.json())
 app.use('/', videoRoute)
 app.use('/', users2Route)
 app.use('/', commentRoute)
+app.use('/', loginRoute)
 
 
 mongoose.connect(process.env.MONGODB_URL,{

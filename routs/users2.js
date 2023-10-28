@@ -2,7 +2,7 @@ const express = require('express');
 const Users2Model = require('../models/users2')
 const users2 = express.Router();
 // const validateUser = require('../middlewares/validateUser')
-// const bcrypt = require('bcrypt')
+const bcrypt = require('bcrypt')
 // const verifiToken = require('../middlewares/verifyToken')
 // const cloudinary = require('cloudinary').v2;
 // const { CloudinaryStorage } = require('multer-storage-cloudinary');
@@ -88,11 +88,9 @@ users2.get('/users2/get/:userId', async (req, res) => {
 // post
 users2.post('/users2/post', async(req,res) =>{
 
-    // per la complessità dell'algoritmo da usare
-    // const salt = await bcrypt.genSalt(10)
-
-    // hash metodo per andare a generare
-    // const hashedPassword = await bcrypt.hash(req.body.password, salt)
+    const salt = await bcrypt.genSalt(10)
+    
+    const hashedPassword = await bcrypt.hash(req.body.password, salt)
 
 
     const newUser = new Users2Model({
@@ -102,9 +100,7 @@ users2.post('/users2/post', async(req,res) =>{
         dob: req.body.dob,
         address: req.body.address,
         avatar: req.body.avatar,
-        // usa per creare la password criptata
-        // password: hashedPassword,
-        password: req.body.password
+        password: hashedPassword,
     })
     try {
         const user = await newUser.save()
