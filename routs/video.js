@@ -2,6 +2,7 @@ const express = require('express');
 const VideoModel = require('../models/videoModel')
 const video = express.Router()
 const verifyToken = require('../middlewares/verifyToken')
+const validateVideo = require('../middlewares/validateVideo')
 
 require('dotenv').config()
 
@@ -60,7 +61,7 @@ video.get('/video/get/:videoId', verifyToken , async (req, res) => {
     }
 });
 
-video.post('/video/post', async (req,res)=>{
+video.post('/video/post', validateVideo, async (req,res)=>{
 
     const newVideo = new VideoModel({
         title: req.body.title,
@@ -87,7 +88,7 @@ video.post('/video/post', async (req,res)=>{
     }
 })
 
-video.put('/video/put/:videoId', async (req,res)=>{
+video.put('/video/put/:videoId', validateVideo, async (req,res)=>{
 
     const { videoId } = req.params;
     const videoExist = await VideoModel.findById(videoId)

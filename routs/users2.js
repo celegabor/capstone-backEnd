@@ -1,7 +1,7 @@
 const express = require('express');
 const Users2Model = require('../models/users2')
 const users2 = express.Router();
-// const validateUser = require('../middlewares/validateUser')
+const validateUser = require('../middlewares/validateUser2')
 const bcrypt = require('bcrypt')
 // const verifiToken = require('../middlewares/verifyToken')
 // const cloudinary = require('cloudinary').v2;
@@ -86,7 +86,7 @@ users2.get('/users2/get/:userId', async (req, res) => {
 });
 
 // post
-users2.post('/users2/post', async(req,res) =>{
+users2.post('/users2/post', validateUser, async(req,res) =>{
 
     const salt = await bcrypt.genSalt(10)
     
@@ -120,7 +120,7 @@ users2.post('/users2/post', async(req,res) =>{
 });
 
 // put
-users2.put('/users2/put/:userId', async (req,res)=>{
+users2.put('/users2/put/:userId', validateUser, async (req,res)=>{
     const { userId } = req.params;
 
     const userExist = await Users2Model.findById(userId);

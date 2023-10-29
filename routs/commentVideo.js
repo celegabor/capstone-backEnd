@@ -1,6 +1,7 @@
 const express = require('express');
 const CommentModel = require('../models/commentVideo')
 const comment = express.Router();
+const validateComment = require('../middlewares/validateComment')
 
 require('dotenv').config()
 
@@ -81,7 +82,7 @@ comment.get('/video/:videoId/comment/:commentId', async (req, res) => {
 });
 
 // put
-comment.put('/comment/put/:commentId', async (req, res) => {
+comment.put('/comment/put/:commentId', validateComment, async (req, res) => {
     const { commentId } = req.params;
 
     const commentExist = await CommentModel.findById(commentId);
@@ -114,7 +115,7 @@ comment.put('/comment/put/:commentId', async (req, res) => {
 });
 
 // post
-comment.post('/video/:videoId/comment/post', async (req, res) => {
+comment.post('/video/:videoId/comment/post', validateComment, async (req, res) => {
     
     const { videoId } = req.params;
 
