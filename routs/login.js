@@ -26,10 +26,12 @@ login.post('/login', async (req, res)=>{
     }
 
     const token = jwt.sign({
+        id: user._id,
         name: user.name,
         lastName: user.lastName,
         email: user.email,
-        address: user.address
+        address: user.address,
+        avatar: user.avatar
     }, process.env.JWT_SECRET, {
         expiresIn: '24h'
     })
