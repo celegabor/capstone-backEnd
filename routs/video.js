@@ -3,8 +3,79 @@ const VideoModel = require('../models/videoModel')
 const video = express.Router()
 const verifyToken = require('../middlewares/verifyToken')
 const validateVideo = require('../middlewares/validateVideo')
+const multer = require('multer')
+const crypto = require('crypto')
+const cloudinary = require('cloudinary').v2;
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+
 
 require('dotenv').config()
+
+
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
+});
+
+const internalStorage= multer.diskStorage({
+    destination: (req, file, cb)=>{
+        cb(null, 'video')
+    },
+    filename:(req, file, cb)=>{
+        const uniqueSuffix = `${Date.now()}-${crypto.randomUUID()}`
+        const fileExtension = file.originalname.split('.').pop()
+        cb(null, `${file.filename}-${uniqueSuffix}.${fileExtension}`)
+    }
+})
+const upload = multer({ storage: internalStorage })
+video.post('/video/post/upload', upload.single('video') , async (req, res)=>{
+    const url = `${req.protocol}://${req.get('host')}`
+
+    try {
+        
+        const videoUrl = req.file.filename;
+        res.status(200).json({
+            video: `${url}/video/${videoUrl}`,
+            statusCode: 200,
+            message: "File caricato con successo",})
+
+    } catch (e) {
+        res.status(500).send({
+            statusCode: 500,
+            message: 'errore interno del server /GET',
+            e: e
+        })
+    }
+} )
+
+
+const cloudStorage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: {
+        folder: 'videos',
+        format: async (req, file) => 'mp4', 
+        public_id: (req, file) => file.name
+    }
+});
+const cloudUpload = multer({ storage: cloudStorage });
+// video su cloudinary
+video.post('/users2/post/cloudUpload', cloudUpload.single('video'), async (req, res) => {
+    try {
+
+        res.status(200).json({ video: req.file.path });
+
+    } catch (e) {
+
+        res.status(500).send({
+            statusCode: 500,
+            message: "errore interno del server",
+            error: e
+        });
+
+    }
+});
+
 
 
 video.get('/video/get', verifyToken, async (req,res)=>{

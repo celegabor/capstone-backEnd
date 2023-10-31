@@ -3,30 +3,80 @@ const Users2Model = require('../models/users2')
 const users2 = express.Router();
 const validateUser = require('../middlewares/validateUser2')
 const bcrypt = require('bcrypt')
-// const verifiToken = require('../middlewares/verifyToken')
-// const cloudinary = require('cloudinary').v2;
-// const { CloudinaryStorage } = require('multer-storage-cloudinary');
-// const multer = require('multer');
-// const crypto = require('crypto');
-// const verifyToken = require('../middlewares/verifyToken');
+const verifiToken = require('../middlewares/verifyToken')
+const cloudinary = require('cloudinary').v2;
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const multer = require('multer');
+const crypto = require('crypto');
 require('dotenv').config();
 
-// cloudinary.config({
-//     cloud_name: process.env.CLAUDINARY_CLOUD_NAME,
-//     api_key: process.env.CLAUDINARY_API_KEY,
-//     api_secret: process.env.CLAUDINARY_API_SECRET
-// });
+cloudinary.config({
+    cloud_name: process.env.CLAUDINARY_CLOUD_NAME,
+    api_key: process.env.CLAUDINARY_API_KEY,
+    api_secret: process.env.CLAUDINARY_API_SECRET
+})
 
-// const cloudStorage = new CloudinaryStorage({
-//     cloudinary: cloudinary,
-//     params: {
-//         folder: 'userAvatars',
-//         format: async (req, file) => 'png', 
-//         public_id: (req, file) => file.name
-//     }
-// });
+// post su internalStorage
+const internalStorage = multer.diskStorage({
+    destination: (req, file, cb) => {
+      cb(null, 'avatar');
+    },
+    filename: (req, file, cb) => {
+      const uniqueSuffix = `${Date.now()}-${crypto.randomUUID()}`;
+      const fileExtension = file.originalname.split('.').pop();
+      cb(null, `${file.fieldname}-${uniqueSuffix}.${fileExtension}`);
+    },
+});
 
-// const cloudUpload = multer({ storage: cloudStorage });
+const cloudStorage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: {
+        folder: 'avatarUsers',
+        format: async (req, file) => 'png',
+        pubblic_id: (req, file) => file.name
+    }
+})
+
+const upload = multer({ storage: internalStorage });
+
+
+users2.post('/users2/post/upload', upload.single('avatar'), async (req, res) => {
+    const url = `${req.protocol}://${req.get('host')}`;
+  
+    try {
+      const imgUrl = req.file.filename;
+      res.status(200).json({
+        avatar: `${url}/avatar/${imgUrl}`,
+        statusCode: 200,
+        message: "File caricato con successo",
+      });
+    } catch (e) {
+      res.status(500).send({
+        statusCode: 500,
+        message: "Errore interno del server internal storage",
+        e,
+      });
+    }
+});
+const cloudUpload = multer({ storage: cloudStorage });
+
+// post su cloudinary
+users2.post('/users2/post/cloudUpload', cloudUpload.single('avatar'), async (req, res) => {
+    try {
+
+        res.status(200).json({ avatar: req.file.path });
+
+    } catch (e) {
+
+        res.status(500).send({
+            statusCode: 500,
+            message: "errore interno del server",
+            error: e
+        });
+
+    }
+});
+
 
 // get
 users2.get('/users2/get', async (req,res) =>{
@@ -152,31 +202,31 @@ users2.put('/users2/put/:userId', validateUser, async (req,res)=>{
 })
 
 // put per caricare un'immagine di copertina (avatar) in Cloudinary per un utente specifico
-// users2.put('/user2/:userId/avatar', cloudUpload.single('avatar'), async (req, res) => {
-//     const userId = req.params.userId;
+users2.put('/user2/:userId/avatar', cloudUpload.single('avatar'), async (req, res) => {
+    const userId = req.params.userId;
 
-//     try {
-//         // Verifica se l'immagine è stata caricata correttamente in Cloudinary
-//         if (req.file) {
-//             res.status(200).json({
-//                 statusCode: 200,
-//                 message: "Immagine di copertina caricata con successo",
-//                 avatarUrl: req.file.path
-//             });
-//         } else {
-//             res.status(400).json({
-//                 statusCode: 400,
-//                 message: "Caricamento dell'immagine di copertina non riuscito"
-//             });
-//         }
-//     } catch (e) {
-//         res.status(500).send({
-//             statusCode: 500,
-//             message: "Errore interno del server",
-//             error: e
-//         });
-//     }
-// });
+    try {
+        // Verifica se l'immagine è stata caricata correttamente in Cloudinary
+        if (req.file) {
+            res.status(200).json({
+                statusCode: 200,
+                message: "Immagine di copertina caricata con successo",
+                avatarUrl: req.file.path
+            });
+        } else {
+            res.status(400).json({
+                statusCode: 400,
+                message: "Caricamento dell'immagine di copertina non riuscito"
+            });
+        }
+    } catch (e) {
+        res.status(500).send({
+            statusCode: 500,
+            message: "Errore interno del server",
+            error: e
+        });
+    }
+});
 
 // delete
 users2.delete('/users2/delete/:userId', async (req, res)=>{

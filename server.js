@@ -14,7 +14,9 @@ require('dotenv').config()
 const PORT = 2121;
 const app = express();
 
-// app.use('/pubblic', express.static(path.join(__dirname, './pubblic')))
+app.use('/videosPubblic', express.static(path.join(__dirname, './videosPubblic')))
+
+app.use('/avatar', express.static(path.join(__dirname, './avatar')))
 
 app.use(cors())
 
