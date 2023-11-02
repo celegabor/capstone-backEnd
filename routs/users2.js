@@ -70,7 +70,7 @@ users2.post('/users2/post/cloudUpload', cloudUpload.single('avatar'), async (req
 // get
 users2.get('/users2/get', async (req,res) =>{
 
-    const{ page = 1, pageSize = 10} = req.query
+    const{ page = 1, pageSize = 20} = req.query
 
     try {
         const users = await Users2Model.find()
