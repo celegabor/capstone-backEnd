@@ -18,64 +18,59 @@ cloudinary.config({
     api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
-const internalStorage= multer.diskStorage({
-    destination: (req, file, cb)=>{
-        cb(null, 'video')
-    },
-    filename:(req, file, cb)=>{
-        const uniqueSuffix = `${Date.now()}-${crypto.randomUUID()}`
-        const fileExtension = file.originalname.split('.').pop()
-        cb(null, `${file.filename}-${uniqueSuffix}.${fileExtension}`)
-    }
-})
-const upload = multer({ storage: internalStorage })
-video.post('/video/post/upload', upload.single('video') , async (req, res)=>{
-    const url = `${req.protocol}://${req.get('host')}`
-
-    try {
-        
-        const videoUrl = req.file.filename;
-        res.status(200).json({
-            video: `${url}/video/${videoUrl}`,
-            statusCode: 200,
-            message: "File caricato con successo",})
-
-    } catch (e) {
-        res.status(500).send({
-            statusCode: 500,
-            message: 'errore interno del server /GET',
-            e: e
-        })
-    }
-} )
-
+// const internalStorage= multer.diskStorage({
+//     destination: (req, file, cb)=>{
+//         cb(null, 'video')
+//     },
+//     filename:(req, file, cb)=>{
+//         const uniqueSuffix = `${Date.now()}-${crypto.randomUUID()}`
+//         const fileExtension = file.originalname.split('.').pop()
+//         cb(null, `${file.filename}-${uniqueSuffix}.${fileExtension}`)
+//     }
+// })
 
 const cloudStorage = new CloudinaryStorage({
     cloudinary: cloudinary,
     params: {
         folder: 'videos',
-        format: async (req, file) => 'mp4', 
-        public_id: (req, file) => file.name
+        resource_type: 'video',
+        public_id: (req, file) => file.originalname
+    }
+});
+
+const upload = multer({ storage: cloudStorage });
+
+video.post('/video/post/upload', upload.single('video'), async (req, res) => {
+    const url = `${req.protocol}://${req.get('host')}`;
+
+    try {
+        const videoUrl = req.file.path;
+        res.status(200).json({
+            video: videoUrl,
+            statusCode: 200,
+            message: "File caricato con successo",
+        });
+    } catch (e) {
+        res.status(500).send({
+            statusCode: 500,
+            message: 'errore interno del server /POST',
+            error: e
+        });
     }
 });
 const cloudUpload = multer({ storage: cloudStorage });
-// video su cloudinary
-video.post('/users2/post/cloudUpload', cloudUpload.single('video'), async (req, res) => {
+
+video.post('/video/post/cloudUpload', cloudUpload.single('video'), async (req, res) => {
     try {
-
         res.status(200).json({ video: req.file.path });
-
     } catch (e) {
-
         res.status(500).send({
             statusCode: 500,
             message: "errore interno del server",
             error: e
         });
-
     }
 });
-
 
 
 video.get('/video/get', verifyToken, async (req,res)=>{
@@ -111,7 +106,7 @@ video.get('/video/get/:videoId', verifyToken , async (req, res) => {
     const { videoId } = req.params;
 
     try {
-        const post = await PostModel.findById(videoId);
+        const post = await VideoModel.findById(videoId);
 
         if (!video) {
             return res.status(404).send({

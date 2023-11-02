@@ -2,55 +2,44 @@ const express = require('express');
 const Users2Model = require('../models/users2')
 const users2 = express.Router();
 const validateUser = require('../middlewares/validateUser2')
-const bcrypt = require('bcrypt')
-const verifiToken = require('../middlewares/verifyToken')
+const multer = require('multer');
 const cloudinary = require('cloudinary').v2;
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
-const multer = require('multer');
 const crypto = require('crypto');
+const verifiToken = require('../middlewares/verifyToken')
+const bcrypt = require('bcrypt')
 require('dotenv').config();
 
 cloudinary.config({
-    cloud_name: process.env.CLAUDINARY_CLOUD_NAME,
-    api_key: process.env.CLAUDINARY_API_KEY,
-    api_secret: process.env.CLAUDINARY_API_SECRET
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
 })
-
-// post su internalStorage
-const internalStorage = multer.diskStorage({
-    destination: (req, file, cb) => {
-      cb(null, 'avatar');
-    },
-    filename: (req, file, cb) => {
-      const uniqueSuffix = `${Date.now()}-${crypto.randomUUID()}`;
-      const fileExtension = file.originalname.split('.').pop();
-      cb(null, `${file.fieldname}-${uniqueSuffix}.${fileExtension}`);
-    },
-});
 
 const cloudStorage = new CloudinaryStorage({
     cloudinary: cloudinary,
     params: {
         folder: 'avatarUsers',
         format: async (req, file) => 'png',
-        pubblic_id: (req, file) => file.name
+        public_id: (req, file) => file.name
     }
 })
 
-const upload = multer({ storage: internalStorage });
+const upload = multer({ storage: cloudStorage });
 
 
 users2.post('/users2/post/upload', upload.single('avatar'), async (req, res) => {
-    const url = `${req.protocol}://${req.get('host')}`;
-  
+
+    const url = `${req.protocol}://${req.get('host')}`;  
+    
     try {
-      const imgUrl = req.file.filename;
-      res.status(200).json({
-        avatar: `${url}/avatar/${imgUrl}`,
-        statusCode: 200,
-        message: "File caricato con successo",
-      });
-    } catch (e) {
+        const imgUrl = req.file.path; 
+        res.status(200).json({
+          avatar: imgUrl,
+          statusCode: 200,
+          message: "File caricato con successo",
+        });
+      }  catch (e) {
       res.status(500).send({
         statusCode: 500,
         message: "Errore interno del server internal storage",
