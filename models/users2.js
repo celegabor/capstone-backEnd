@@ -15,7 +15,7 @@ const Users2Schema = new mongoose.Schema({
         required: true
     },
     dob:{
-        type: String,
+        type: Date,
         required: true
     },
     address:{

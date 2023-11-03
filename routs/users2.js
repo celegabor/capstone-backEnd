@@ -136,7 +136,7 @@ users2.post('/users2/post', validateUser, async(req,res) =>{
         name: req.body.name,
         lastName: req.body.lastName,
         email: req.body.email,
-        dob: req.body.dob,
+        dob: new Date( req.body.dob),
         address: req.body.address,
         avatar: req.body.avatar,
         password: hashedPassword,
@@ -159,7 +159,7 @@ users2.post('/users2/post', validateUser, async(req,res) =>{
 });
 
 // put
-users2.put('/users2/put/:userId', validateUser, async (req,res)=>{
+users2.put('/users2/put/:userId', async (req,res)=>{
     const { userId } = req.params;
 
     const userExist = await Users2Model.findById(userId);
