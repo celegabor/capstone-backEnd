@@ -66,7 +66,6 @@ users2.post('/users2/post/cloudUpload', cloudUpload.single('avatar'), async (req
     }
 });
 
-
 // get
 users2.get('/users2/get', async (req,res) =>{
 
@@ -123,6 +122,25 @@ users2.get('/users2/get/:userId', async (req, res) => {
         });
     }
 });
+
+// get emails
+users2.get('/users2/getEmails', async (req, res) => {
+    try {
+      const emails = await Users2Model.find({}, 'email');
+      const emailList = emails.map(user => user.email);
+      
+      res.status(200).send({
+        statusCode: 200,
+        emails: emailList,
+      });
+    } catch (e) {
+      res.status(500).send({
+        statusCode: 500,
+        message: "Errore interno del server",
+        error: e,
+      });
+    }
+  });
 
 // post
 users2.post('/users2/post', validateUser, async(req,res) =>{
