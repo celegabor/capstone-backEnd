@@ -8,7 +8,9 @@ const googleRoute = require('./routs/google')
 const videoRoute = require('./routs/video')
 const users2Route = require('./routs/users2')
 const commentRoute = require('./routs/commentVideo')
-const loginRoute = require('./routs/login')
+const loginRoute = require('./routs/login');
+const messageRoute = require('./routs/message');
+
 
 require('dotenv').config()
 
@@ -30,6 +32,7 @@ app.use('/', commentRoute)
 app.use('/', loginRoute)
 app.use('/', githubRoute)
 app.use('/', googleRoute)
+app.use('/', messageRoute)
 
 
 
