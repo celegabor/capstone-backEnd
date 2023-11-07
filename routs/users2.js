@@ -62,7 +62,6 @@ users2.post('/users2/post/cloudUpload', cloudUpload.single('avatar'), async (req
             message: "errore interno del server",
             error: e
         });
-
     }
 });
 
@@ -141,7 +140,30 @@ users2.get('/users2/getEmails', async (req, res) => {
       });
     }
   });
-  
+
+// caricare immagini "doc"
+users2.post('/users2/post/docUpload', cloudUpload.single('doc'), async (req, res) => {
+    try {
+        if (req.file) {
+            res.status(200).json({
+                statusCode: 200,
+                message: "Immagine 'doc' caricata con successo",
+                docUrl: req.file.path
+            });
+        } else {
+            res.status(400).json({
+                statusCode: 400,
+                message: "Caricamento dell'immagine 'doc' non riuscito"
+            });
+        }
+    } catch (e) {
+        res.status(500).send({
+            statusCode: 500,
+            message: "Errore interno del server",
+            error: e
+        });
+    }
+});
 
 // post
 users2.post('/users2/post', validateUser, async(req,res) =>{

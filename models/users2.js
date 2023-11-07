@@ -22,6 +22,10 @@ const Users2Schema = new mongoose.Schema({
         type: String,
         required: true
     },
+    doc:{
+        type: String,
+        required: false
+    },
     avatar:{
         type: String,
     },
