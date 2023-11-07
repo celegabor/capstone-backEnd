@@ -1,4 +1,3 @@
-// richiedi le varie cose
 const express = require('express');
 const mongoose = require('mongoose');
 const path = require('path')
@@ -20,7 +19,7 @@ const app = express();
 app.use(express.json())
 app.use(cors())
 
-app.use('/videosPubblic', express.static(path.join(__dirname, './videosPubblic')))
+app.use('/video', express.static(path.join(__dirname, './video')))
 
 app.use('/avatar', express.static(path.join(__dirname, './avatar')))
 

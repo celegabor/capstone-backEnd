@@ -141,6 +141,7 @@ users2.get('/users2/getEmails', async (req, res) => {
       });
     }
   });
+  
 
 // post
 users2.post('/users2/post', validateUser, async(req,res) =>{
