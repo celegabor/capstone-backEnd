@@ -7,152 +7,86 @@ const multer = require('multer')
 const cloudinary = require('cloudinary').v2
 const { CloudinaryStorage } = require('multer-storage-cloudinary')
 const crypto = require('crypto')
-require('dotenv')
-require('dotenv').config()
+const dotenv = require('dotenv');
+const fs = require('fs');
 
-// cloudinary.config({
-//     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-//     api_key: process.env.CLOUDINARY_API_KEY,
-//     api_secret: process.env.CLOUDINARY_API_SECRET
-// });
+dotenv.config();
 
-// const cloudStorage = new CloudinaryStorage({
-//     cloudinary: cloudinary,
-//     params: {
-//         folder: 'videos',
-//         format: async (req, file) => 'mp4',
-//         public_id: (req, file) => file.originalname,
-//         resource_type: 'video'
-//     }
-// });
+// Configure Cloudinary
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
+});
 
-// const cloudUpload = multer({ storage: cloudStorage });
-
-// video.post('/video/cloudUpload', cloudUpload.single('video'), async (req, res) => {
-//     try {
-//         if (req.file) {
-//             res.status(200).json({ videoUrl: req.file.path });
-//         } else {
-//             res.status(500).json({ message: 'Errore durante l\'upload su Cloudinary' });
-//         }
-//     } catch (e) {
-//         res.status(500).send({
-//             statusCode: 500,
-//             message: 'Errore durante l\'upload su Cloudinary',
-//             error: e
-//         });
-//     }
-// });
-
-
-// ------------------------------------------
-
-// cloudinary.config({
-//     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-//     api_key: process.env.CLOUDINARY_API_KEY,
-//     api_secret: process.env.CLOUDINARY_API_SECRET,
-//   });
-
-//   video.post('/video/cloudUpload', async (req, res) => {
-//     try {
-//       const result = await cloudinary.v2.uploader.upload(req.file.path, {
-//         resource_type: "video",
-//         folder: 'videos',
-//         public_id: req.file.fieldname + '-' + Date.now(),
-//         chunk_size: 6000000,
-//         eager: [
-//           { width: 300, height: 300, crop: "pad", audio_codec: "none" },
-//           { width: 160, height: 100, crop: "crop", gravity: "south", audio_codec: "none" }
-//         ],
-//         eager_async: true,
-//         eager_notification_url: "https://mysite.example.com/notify_endpoint"
-//       });
-  
-//       res.status(200).json({ video: result.secure_url });
-//     } catch (error) {
-//       console.error('Errore durante l\'upload su Cloudinary:', error);
-//       res.status(500).json({ message: 'Errore durante l\'upload su Cloudinary' });
-//     }
-//   });
-
-// --------------------------------------------
-
-
-
-// cloudinary.config({
-//     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-//     api_key: process.env.CLOUDINARY_API_KEY,
-//     api_secret: process.env.CLOUDINARY_API_SECRET
-// })
-
-// const cloudStorage = new CloudinaryStorage({
-//     cloudinary: cloudinary,
-//     params:{
-//         folder: 'videos',
-//         format: async (req, file) => 'mp4',
-//         public_id: (req, file) => file.name,
-//         resource_type: 'video'
-
-//     }
-// })
-
-const internalStorage = multer.diskStorage({
-
-    destination: (req, file, cb) =>{
-        cb(null, 'video')
-    },
-    filename: (req, file, cb) =>{
-        const uniqueSuffix = `${Date.now()}-${crypto.randomUUID()}`
-        const fileExtension = file.originalname.split('.').pop()
-        cb(null, `${file.fieldname}-${uniqueSuffix}.${fileExtension}` )
+// Set up Cloudinary storage for multer
+const storage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: {
+        folder: 'VIDEOS',
+        format: 'mp4',
+        resource_type: 'video'
     }
+});
 
-}) 
+// Set up multer with storage
+const upload = multer({ storage: storage }).single('video');
 
-const upload = multer({ storage:internalStorage })
+// Route for video upload
+video.post('/videoupload', (req, res) => {
+    console.log('Received video upload request');
+    upload(req, res, (err) => {
+        console.log('Inside upload callback');
+        if (err instanceof multer.MulterError) {
+            console.error('Multer error:', err.message);
+            return res.status(400).json({ message: 'File upload error: ' + err.message });
+        }
+        if (err) {
+            console.error('Upload error:', err);
+            return res.status(500).json({ message: 'Internal server error.' });
+        }
 
-// const cloudUpload = multer({ storage:cloudStorage })
+        res.status(200).json({ video: req.file.path });
+    });
+});
 
-// video.post('/video/cloudUpload', cloudUpload.single('video'), async (req, res) => {
+
+
+// const internalStorage = multer.diskStorage({
+
+//     destination: (req, file, cb) =>{
+//         cb(null, 'video')
+//     },
+//     filename: (req, file, cb) =>{
+//         const uniqueSuffix = `${Date.now()}-${crypto.randomUUID()}`
+//         const fileExtension = file.originalname.split('.').pop()
+//         cb(null, `${file.fieldname}-${uniqueSuffix}.${fileExtension}` )
+//     }
+
+// }) 
+
+// const upload = multer({ storage:internalStorage })
+
+
+// video.post('/video/upload', upload.single('video') ,async (req, res) => {
+//     const url = `${req.protocol}://${req.get('host')}`
+
 //     try {
 
-//         res.statusCode(200).json({ video: req.file.path })
+//         const videoUrl = req.file.filename;
+//         res.status(200).json({ video: `${url}/video/${videoUrl}`})
         
 //     } catch (e) {
 //         res.status(500).send({
 //             statusCode: 500,
-//             message: 'errore cloudUpload',
+//             message: 'errore upload',
 //             e: e
 //         })
+//         console.log('errore upload: ', e);
 //     }
+
+
 // })
-
-
-
-video.post('/video/upload', upload.single('video') ,async (req, res) => {
-    const url = `${req.protocol}://${req.get('host')}`
-
-    try {
-
-        const videoUrl = req.file.filename;
-        res.status(200).json({ video: `${url}/video/${videoUrl}`})
-        
-    } catch (e) {
-        res.status(500).send({
-            statusCode: 500,
-            message: 'errore upload',
-            e: e
-        })
-        console.log('errore upload: ', e);
-    }
-
-
-})
-
-
-
-// --------------------------------------------
-
 
 
 video.get('/video/get', verifyToken, async (req,res)=>{
