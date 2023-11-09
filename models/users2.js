@@ -22,6 +22,14 @@ const Users2Schema = new mongoose.Schema({
         type: String,
         required: true
     },
+    provincia:{
+        type: String,
+        required: false
+    },
+    cap:{
+        type: String,
+        required: false
+    },
     doc:{
         type: String,
         required: false
@@ -32,7 +40,15 @@ const Users2Schema = new mongoose.Schema({
     password:{
         type: String,
         required: true,
-    }
+    },
+    gender:{
+        type: String,
+        required: false
+    },
+    work:{
+        type: String,
+        required: false
+    },
 }, {timestamps: true, strict: true})
 
 
