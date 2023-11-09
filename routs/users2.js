@@ -66,7 +66,7 @@ users2.post('/users2/post/cloudUpload', cloudUpload.single('avatar'), async (req
 });
 
 // get
-users2.get('/users2/get', async (req,res) =>{
+users2.get('/users2/get', verifiToken, async (req,res) =>{
 
     const{ page = 1, pageSize = 20} = req.query
 
@@ -96,7 +96,7 @@ users2.get('/users2/get', async (req,res) =>{
 });
 
 // get by Id
-users2.get('/users2/get/:userId', async (req, res) => {
+users2.get('/users2/get/:userId', verifiToken, async (req, res) => {
     const { userId } = req.params;
 
     try {
@@ -259,7 +259,7 @@ users2.put('/user2/:userId/avatar', cloudUpload.single('avatar'), async (req, re
 });
 
 // delete
-users2.delete('/users2/delete/:userId', async (req, res)=>{
+users2.delete('/users2/delete/:userId', verifiToken, async (req, res)=>{
     const { userId } = req.params;
 
     try {
