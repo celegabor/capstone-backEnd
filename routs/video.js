@@ -49,7 +49,7 @@ video.post("/videoupload", (req, res) => {
 });
 
 video.get("/video/get", verifyToken, async (req, res) => {
-  const { page = 1, pageSize = 10 } = req.query;
+  const { page = 1, pageSize = 9 } = req.query;
 
   try {
     const videos = await VideoModel.find()
