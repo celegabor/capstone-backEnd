@@ -12,8 +12,8 @@ const validateUser = (req, res, next) =>{
     if(typeof email !== 'string'){
         errors.push('email must be a string')
     }
-    if(typeof dob !== 'number'){
-        errors.push('dob must be a number')
+    if(typeof dob !== 'string'){
+        errors.push('dob must be a string')
     }
     if(typeof address !== 'string'){
         errors.push('address must be a string')
