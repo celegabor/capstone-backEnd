@@ -19,7 +19,7 @@ const app = express();
 app.use(express.json())
 
 const corsOptions = {
-    origin: ['https://main--fantastic-florentine-b750a4.netlify.app'],
+    origin: ['https://main--fantastic-florentine-b750a4.netlify.app','http://localhost:3000'],
 };
 app.use(cors(corsOptions));
 
