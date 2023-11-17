@@ -17,7 +17,11 @@ const PORT = 2121;
 const app = express();
 
 app.use(express.json())
-app.use(cors())
+
+const corsOptions = {
+    origin: ['https://main--fantastic-florentine-b750a4.netlify.app'],
+};
+app.use(cors(corsOptions));
 
 app.use('/video', express.static(path.join(__dirname, './video')))
 
